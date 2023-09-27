@@ -13,12 +13,10 @@ public class Main {
             // 获取配置的类名
             String className = properties.getProperty("bootstrapClass");
 
-            // 根据类名创建对象
-            Class<?> clazz = Class.forName(className);
-            Object obj = clazz.getDeclaredConstructor().newInstance();
+            Object obj = createInstance(className);
 
             // 查找带有@InitMethod注解的方法并调用
-            Method[] methods = clazz.getDeclaredMethods();
+            Method[] methods = Class.forName(className).getDeclaredMethods();
             for (Method method : methods) {
                 if (method.isAnnotationPresent(InitMethod.class)) {
                     method.invoke(obj);
@@ -36,6 +34,13 @@ public class Main {
             properties.load(inputStream);
         }
         return properties;
+    }
+
+    public static Object createInstance(String className) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        // 根据类名创建对象
+        Class<?> clazz = Class.forName(className);
+        Object obj = clazz.getDeclaredConstructor().newInstance();
+        return obj;
     }
 }
 
